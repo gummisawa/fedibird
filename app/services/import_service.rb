@@ -20,6 +20,8 @@ class ImportService < BaseService
       import_domain_blocks!
     when 'bookmarks'
       import_bookmarks!
+    when 'account_subscribings'
+      import_account_subscribings!
     end
   end
 
@@ -27,7 +29,12 @@ class ImportService < BaseService
 
   def import_follows!
     parse_import_data!(['Account address'])
-    import_relationships!('follow', 'unfollow', @account.following, ROWS_PROCESSING_LIMIT, reblogs: { header: 'Show boosts', default: true })
+    import_relationships!('follow', 'unfollow', @account.following, ROWS_PROCESSING_LIMIT, reblogs: { header: 'Show boosts', default: true }, notify: { header: 'Notify on new posts', default: false }, languages: { header: 'Languages', default: nil }, delivery: { header: 'Delivery to home', default: true })
+  end
+
+  def import_account_subscribings!
+    parse_import_data!(['Account address'])
+    import_relationships!('account_subscribe', 'account_unsubscribe', @account.subscribing, ROWS_PROCESSING_LIMIT, lists: { header: 'List', default: nil }, reblogs: { header: 'Show boosts', default: true }, media_only: { header: 'Media only', default: false })
   end
 
   def import_blocks!
