@@ -18,7 +18,7 @@ import AccountPopup from 'mastodon/components/account_popup';
 const getFilteredEmojiReaction = (emojiReaction, relationships) => {
   let filteredEmojiReaction = emojiReaction.update('account_ids', accountIds => accountIds.filterNot( accountId => {
     const relationship = relationships.get(accountId);
-    return relationship?.get('blocking') || relationship?.get('blocked_by') || relationship?.get('domain_blocking') || relationship?.get('muting')
+    return relationship?.get('blocking') || relationship?.get('blocked_by') || relationship?.get('domain_blocking') || relationship?.get('muting') || relationship?.get('cat_muting');
   }));
 
   const count = filteredEmojiReaction.get('account_ids').size;

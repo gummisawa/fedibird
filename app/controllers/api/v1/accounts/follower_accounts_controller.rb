@@ -21,6 +21,7 @@ class Api::V1::Accounts::FollowerAccountsController < Api::BaseController
 
     scope = default_accounts
     scope = scope.where.not(id: current_account.excluded_from_timeline_account_ids) unless current_account.nil? || current_account.id == @account.id
+    scope = scope.where.not(id: Account.where("settings ? 'is_cat'").select(:id)) unless current_account.nil? || current_account.id == @account.id || !current_user.setting_hide_cat
     scope.merge(paginated_follows).to_a
   end
 

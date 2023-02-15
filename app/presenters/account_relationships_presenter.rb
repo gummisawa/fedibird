@@ -2,12 +2,13 @@
 
 class AccountRelationshipsPresenter
   attr_reader :following, :showing_reblogs, :notifying, :delivery_following, :followed_by, :subscribing, :blocking, :blocked_by,
-              :muting, :muting_notifications, :requested, :domain_blocking,
+              :muting, :muting_notifications, :cat_muting, :requested, :domain_blocking,
               :endorsed, :account_note
 
   def initialize(account_ids, current_account_id, **options)
     @account_ids        = account_ids.map { |a| a.is_a?(Account) ? a.id : a.to_i }.uniq
     @current_account_id = current_account_id
+    @hide_cat           = User.find_by(account_id: current_account_id)&.setting_hide_cat
 
     @following            = cached[:following]
     @showing_reblogs      = cached[:showing_reblogs]
@@ -19,6 +20,7 @@ class AccountRelationshipsPresenter
     @blocked_by           = cached[:blocked_by]
     @muting               = cached[:muting]
     @muting_notifications = cached[:muting_notifications]
+    @cat_muting           = @hide_cat ? cached[:cat_muting] : {}
     @requested            = cached[:requested]
     @domain_blocking      = cached[:domain_blocking]
     @endorsed             = cached[:endorsed]
@@ -30,7 +32,8 @@ class AccountRelationshipsPresenter
         followings as (select * from follows where account_id = :current_account_id and target_account_id in (:account_ids)),
         follow_requesteds as (select * from follow_requests where account_id = :current_account_id and target_account_id in (:account_ids)),
         filter_mutes as (select * from mutes where account_id = :current_account_id and target_account_id in (:account_ids)),
-        subscribe_lists as (select target_account_id, coalesce(list_id, -1) as id, json_object_agg('reblogs', show_reblogs) as reblogs from account_subscribes where account_id = :current_account_id and target_account_id in (:account_ids) group by target_account_id, id)
+        subscribe_lists as (select target_account_id, coalesce(list_id, -1) as id, json_object_agg('reblogs', show_reblogs) as reblogs from account_subscribes where account_id = :current_account_id and target_account_id in (:account_ids) group by target_account_id, id),
+        cats as (select id from accounts where settings ? 'is_cat' and id in (:account_ids))
       select
         (select string_agg(target_account_id::text, ',') from followings) as following,
         (select string_agg(target_account_id::text, ',') from (select target_account_id from followings where show_reblogs union all select target_account_id from follow_requesteds where show_reblogs) a) as showing_reblogs,
@@ -44,6 +47,7 @@ class AccountRelationshipsPresenter
         (select string_agg(account_id::text, ',') from blocks where target_account_id = :current_account_id and account_id in (:account_ids)) as blocked_by,
         (select string_agg(target_account_id::text, ',') from filter_mutes) as muting,
         (select string_agg(target_account_id::text, ',') from filter_mutes where hide_notifications) as muting_notifications,
+        (select string_agg(id::text, ',') from cats) as cat_muting,
         (select string_agg(adb.account_id::text, ',') from accounts a join account_domain_blocks adb on a.domain = adb.domain where adb.account_id = :current_account_id and a.id in (:account_ids)) as domain_blocking,
         (select string_agg(target_account_id::text, ',') from account_pins where account_id = :current_account_id and target_account_id in (:account_ids)) as endorsed,
         (select json_object_agg(n.target_account_id, n.val)
@@ -60,6 +64,7 @@ class AccountRelationshipsPresenter
       @blocked_by.merge!(mapping_from_string(result['blocked_by']))
       @muting.merge!(mapping_from_string(result['muting']))
       @muting_notifications.merge!(mapping_from_string(result['muting_notifications']))
+      @cat_muting.merge!(mapping_from_string(@hide_cat ? result['cat_muting'] : {}))
       @requested.merge!(mapping_from_string(result['requested']))
       @domain_blocking.merge!(mapping_from_string(result['domain_blocking']))
       @endorsed.merge!(mapping_from_string(result['endorsed']))
@@ -77,6 +82,7 @@ class AccountRelationshipsPresenter
     @blocking.merge!(options[:blocking_map] || {})
     @blocked_by.merge!(options[:blocked_by_map] || {})
     @muting.merge!(options[:muting_map] || {})
+    @cat_muting.merge!(options[:cat_muting_map] || {})
     @requested.merge!(options[:requested_map] || {})
     @domain_blocking.merge!(options[:domain_blocking_map] || {})
     @endorsed.merge!(options[:endorsed_map] || {})
@@ -115,6 +121,7 @@ class AccountRelationshipsPresenter
       blocked_by: {},
       muting: {},
       muting_notifications: {},
+      cat_muting: {},
       requested: {},
       domain_blocking: {},
       endorsed: {},
@@ -149,6 +156,7 @@ class AccountRelationshipsPresenter
         blocked_by:           { account_id => blocked_by[account_id] },
         muting:               { account_id => muting[account_id] },
         muting_notifications: { account_id => muting_notifications[account_id] },
+        cat_muting:           { account_id => cat_muting[account_id] },
         requested:            { account_id => requested[account_id] },
         domain_blocking:      { account_id => domain_blocking[account_id] },
         endorsed:             { account_id => endorsed[account_id] },

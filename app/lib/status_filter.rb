@@ -22,7 +22,7 @@ class StatusFilter
   end
 
   def filtered_status?
-    blocking_account? || blocking_domain? || muting_account?
+    blocking_account? || blocking_domain? || muting_account? || cat_muting_account?
   end
 
   def blocking_account?
@@ -35,6 +35,10 @@ class StatusFilter
 
   def muting_account?
     @preloaded_account_relations[:muting] ? @preloaded_account_relations[:muting][status.account_id] : account.muting?(status.account_id)
+  end
+
+  def cat_muting_account?
+    @preloaded_account_relations[:cat_muting] ? @preloaded_account_relations[:cat_muting][status.account_id] : account.cat_muting?(status.account_id)
   end
 
   def silenced_account?

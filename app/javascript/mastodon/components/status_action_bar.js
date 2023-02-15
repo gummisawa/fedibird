@@ -343,7 +343,7 @@ class StatusActionBar extends ImmutablePureComponent {
     const reblogsCount       = status.get('reblogs_count');
     const referredByCount    = status.get('status_referred_by_count');
     const favouritesCount    = status.get('favourites_count');
-    const [ _, domain ]      = account.get('acct').split('@');
+    const [ , domain ]       = account.get('acct').split('@');
 
     let menu = [];
 
@@ -415,7 +415,9 @@ class StatusActionBar extends ImmutablePureComponent {
         menu.push(null);
       }
 
-      if (relationship && relationship.get('muting')) {
+      if (relationship && relationship.get('cat_muting')) {
+        // no op
+      } else if (relationship && relationship.get('muting')) {
         menu.push({ text: intl.formatMessage(messages.unmute, { name: account.get('username') }), action: this.handleMuteClick });
       } else {
         menu.push({ text: intl.formatMessage(messages.mute, { name: account.get('username') }), action: this.handleMuteClick });

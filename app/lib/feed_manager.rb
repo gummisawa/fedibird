@@ -354,7 +354,8 @@ class FeedManager
   # @param [Symbol] context
   def blocks_or_mutes?(receiver_id, account_ids, context)
     Block.where(account_id: receiver_id, target_account_id: account_ids).any? ||
-      (context == :home ? Mute.where(account_id: receiver_id, target_account_id: account_ids).any? : Mute.where(account_id: receiver_id, target_account_id: account_ids, hide_notifications: true).any?)
+      (context == :home ? Mute.where(account_id: receiver_id, target_account_id: account_ids).any? : Mute.where(account_id: receiver_id, target_account_id: account_ids, hide_notifications: true).any?) ||
+      (Account.find(receiver_id)&.user&.setting_hide_cat && Account.where(id: account_ids).where("settings ? 'is_cat'").exists?)
   end
 
   # Check if status should not be added to the home feed
@@ -375,7 +376,7 @@ class FeedManager
       check_for_blocks.concat(crutches[:active_mentions][status.reblog_of_id] || [])
     end
 
-    return true if check_for_blocks.any? { |target_account_id| crutches[:blocking][target_account_id] || crutches[:muting][target_account_id] }
+    return true if check_for_blocks.any? { |target_account_id| crutches[:blocking][target_account_id] || crutches[:muting][target_account_id] || crutches[:cat_muting][target_account_id] }
     return true if crutches[:blocked_by][status.account_id]
 
     if status.reblog?                                                                                                            # Filter out a reblog
@@ -618,6 +619,7 @@ class FeedManager
     crutches[:hiding_reblogs]    = Follow.where(account_id: receiver_id, target_account_id: statuses.map { |s| s.account_id if s.reblog? }.compact, show_reblogs: false).pluck(:target_account_id).index_with(true)
     crutches[:blocking]          = Block.where(account_id: receiver_id, target_account_id: check_for_blocks).pluck(:target_account_id).index_with(true)
     crutches[:muting]            = Mute.where(account_id: receiver_id, target_account_id: check_for_blocks).pluck(:target_account_id).index_with(true)
+    crutches[:cat_muting]        = Account.find(receiver_id)&.user&.setting_hide_cat ? Account.where(id: check_for_blocks).where("settings ? 'is_cat'").pluck(:id).index_with(true) : {}
     crutches[:domain_blocking]   = AccountDomainBlock.where(account_id: receiver_id, domain: statuses.map { |s| s.account&.domain }.compact).pluck(:domain).index_with(true)
     crutches[:domain_blocking_r] = AccountDomainBlock.where(account_id: receiver_id, domain: statuses.map { |s| s.reblog&.account&.domain }.compact).pluck(:domain).index_with(true)
     crutches[:blocked_by]        = Block.where(target_account_id: receiver_id, account_id: statuses.flat_map { |s| [s&.account_id, s.reblog&.account_id] }.compact).pluck(:account_id).index_with(true)

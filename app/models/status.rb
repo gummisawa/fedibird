@@ -123,7 +123,7 @@ class Status < ApplicationRecord
   scope :mentioned_with, ->(account) { joins(:mentions).where(mentions: { account_id: account }) }
   scope :excluding_silenced_accounts, -> { left_outer_joins(:account).where(accounts: { silenced_at: nil }) }
   scope :including_silenced_accounts, -> { left_outer_joins(:account).where.not(accounts: { silenced_at: nil }) }
-  scope :not_excluded_by_account, ->(account) { where.not(account_id: account.excluded_from_timeline_account_ids) }
+  scope :not_excluded_by_account, ->(account) { where.not(account_id: account.excluded_from_timeline_account_ids).then { |scope| account&.user&.setting_hide_cat ? scope.where.not(account_id: Account.where("settings ? 'is_cat'").select(:id)) : scope } }
   scope :not_domain_blocked_by_account, ->(account) { account.excluded_from_timeline_domains.blank? ? left_outer_joins(:account) : left_outer_joins(:account).where('accounts.domain IS NULL OR accounts.domain NOT IN (?)', account.excluded_from_timeline_domains) }
   scope :tagged_with_all, ->(tag_ids) {
     Array(tag_ids).reduce(self) do |result, id|
@@ -553,10 +553,11 @@ class Status < ApplicationRecord
         visibility.push(:private) if account.following?(target_account)
 
         scope = left_outer_joins(:reblog)
-
-        scope.where(visibility: visibility)
-             .or(scope.where(id: account.mentions.select(:status_id)))
-             .merge(scope.where(reblog_of_id: nil).or(scope.where.not(reblogs_statuses: { account_id: account.excluded_from_timeline_account_ids })))
+        scope = scope.merge(Status.where(visibility: visibility).or(Status.where(id: account.mentions.select(:status_id))))
+        scope = scope.merge(scope.where(reblog_of_id: nil).or(
+          scope.where.not(reblogs_statuses: { account_id: account.excluded_from_timeline_account_ids })
+          .then { |scope| account.user.setting_hide_cat ? scope.where.not(reblogs_statuses: { account_id: Account.where("settings ? 'is_cat'").select(:id) } ) : scope }
+          ))
       end
     end
 

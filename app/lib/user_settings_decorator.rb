@@ -99,6 +99,7 @@ class UserSettingsDecorator
     hide_link_preview
     hide_photo_preview
     hide_video_preview
+    hide_cat
   ).freeze
 
   STRING_KEYS = %w(

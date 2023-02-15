@@ -17,6 +17,7 @@ class Api::V1::Statuses::EmojiReactionedByController < Api::BaseController
   def load_emoji_reactions
     scope = default_emoji_reactions
     scope = scope.where.not(account_id: current_account.excluded_from_timeline_account_ids) unless current_account.nil?
+    scope = scope.where.not(account_id: Account.where("settings ? 'is_cat'").select(:id)) unless current_account.nil? || !current_user.setting_hide_cat
     scope.merge(paginated_emoji_reactions).to_a
   end
 

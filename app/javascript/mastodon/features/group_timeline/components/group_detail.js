@@ -40,6 +40,7 @@ const messages = defineMessages({
   requested: { id: 'account.requested', defaultMessage: 'Awaiting approval' },
   unblock: { id: 'account.unblock', defaultMessage: 'Unblock @{name}' },
   unmute: { id: 'account.unmute', defaultMessage: 'Unmute @{name}' },
+  cat_mute: { id: 'account.cat_mute', defaultMessage: 'Muted due to cat mode' },
   unfollowConfirm: {
     id: 'confirmations.unfollow.confirm',
     defaultMessage: 'Unfollow',
@@ -225,6 +226,7 @@ class GroupDetail extends ImmutablePureComponent {
       const requested        = account.getIn(['relationship', 'requested']);
       const blocking         = account.getIn(['relationship', 'blocking']);
       const muting           = account.getIn(['relationship', 'muting']);
+      const cat_muting       = account.getIn(['relationship', 'cat_muting']);
 
       if (requested) {
         buttons = (
@@ -244,6 +246,16 @@ class GroupDetail extends ImmutablePureComponent {
               name: account.get('username'),
             })}
             onClick={this.handleBlock}
+          />
+        );
+      } else if (cat_muting) {
+        buttons = (
+          <IconButton
+            disabled
+            icon='volume-up'
+            title={intl.formatMessage(messages.cat_mute, {
+              name: account.get('username'),
+            })}
           />
         );
       } else if (muting) {

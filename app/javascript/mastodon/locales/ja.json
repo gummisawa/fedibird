@@ -11,6 +11,8 @@
   "account.blocked": "ブロック済み",
   "account.browse_more_on_origin_server": "リモートで表示",
   "account.cancel_follow_request": "フォローリクエストを取り消す",
+  "account.cat_mute": "Catモードによるミュート",
+  "account.cat_muted": "Catモードによるミュート済み",
   "account.column_settings.advanced_settings": "詳細設定",
   "account.column_settings.advanced_mode": "詳細モード",
   "account.column_settings.hide_featured_tags": "注目のタグの選択を隠す",

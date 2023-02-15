@@ -100,6 +100,7 @@ module AccountAssociations
                           .select('CASE reblog_of_id WHEN NULL THEN id ELSE reblog_of_id END')
                   )
     scope = scope.where.not(account_id: account.excluded_from_timeline_account_ids) unless account.nil?
+    scope = scope.where.not(account_id: Account.where("settings ? 'is_cat'").select(:id)) unless account.nil? || !account&.user&.setting_hide_cat
     scope
   end
 end

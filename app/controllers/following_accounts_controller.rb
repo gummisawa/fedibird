@@ -41,6 +41,7 @@ class FollowingAccountsController < ApplicationController
 
     scope = Follow.where(account: @account)
     scope = scope.where.not(target_account_id: current_account.excluded_from_timeline_account_ids) if user_signed_in?
+    scope = scope.where.not(target_account_id: Account.where("settings ? 'is_cat'").select(:id)) if user_signed_in? && current_user.setting_hide_cat
     @follows = scope.recent.page(params[:page]).per(FOLLOW_PER_PAGE).preload(:target_account)
   end
 

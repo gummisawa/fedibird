@@ -364,7 +364,9 @@ class ActionBar extends React.PureComponent {
         menu.push(null);
       }
 
-      if (relationship && relationship.get('muting')) {
+      if (relationship && relationship.get('cat_muting')) {
+        // no op
+      } else if (relationship && relationship.get('muting')) {
         menu.push({ text: intl.formatMessage(messages.unmute, { name: account.get('username') }), action: this.handleMuteClick });
       } else {
         menu.push({ text: intl.formatMessage(messages.mute, { name: account.get('username') }), action: this.handleMuteClick });

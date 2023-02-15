@@ -155,6 +155,7 @@ module AccountInteractions
   end
 
   def mutual?(other_account)
+    other_account = Account.find(other_account) unless other_account.class.name === 'Account'
     following?(other_account) && other_account.following?(self)
   end
 
@@ -168,6 +169,11 @@ module AccountInteractions
 
   def muting?(other_account)
     mute_relationships.where(target_account: other_account).exists?
+  end
+
+  def cat_muting?(other_account)
+    other_account = Account.find(other_account) unless other_account.class.name === 'Account'
+    user&.setting_hide_cat && other_account.cat?
   end
 
   def muting_conversation?(conversation)

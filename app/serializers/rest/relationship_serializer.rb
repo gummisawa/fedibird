@@ -2,7 +2,7 @@
 
 class REST::RelationshipSerializer < ActiveModel::Serializer
   attributes :id, :following, :delivery_following, :showing_reblogs, :notifying, :followed_by, :account_subscribing,
-             :blocking, :blocked_by, :muting, :muting_notifications, :requested,
+             :blocking, :blocked_by, :muting, :muting_notifications, :cat_muting, :requested,
              :domain_blocking, :endorsed, :note
 
   def id
@@ -47,6 +47,10 @@ class REST::RelationshipSerializer < ActiveModel::Serializer
 
   def muting_notifications
     instance_options[:relationships].muting_notifications[object.id] ? true : false
+  end
+
+  def cat_muting
+    instance_options[:relationships].cat_muting[object.id] ? true : false
   end
 
   def requested

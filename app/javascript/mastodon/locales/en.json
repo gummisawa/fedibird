@@ -11,6 +11,8 @@
   "account.blocked": "Blocked",
   "account.browse_more_on_origin_server": "Browse more on the original profile",
   "account.cancel_follow_request": "Cancel follow request",
+  "account.cat_mute": "Muted due to cat mode",
+  "account.cat_muted": "Muted by cat mode",
   "account.column_settings.advanced_settings": "Advanced settings",
   "account.column_settings.advanced_mode": "Advanced mode",
   "account.column_settings.hide_featured_tags": "Hide featuread tags selection",

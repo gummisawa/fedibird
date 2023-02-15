@@ -18,6 +18,7 @@ const messages = defineMessages({
   requested: { id: 'account.requested', defaultMessage: 'Awaiting approval' },
   unblock: { id: 'account.unblock', defaultMessage: 'Unblock @{name}' },
   unmute: { id: 'account.unmute', defaultMessage: 'Unmute @{name}' },
+  cat_mute: { id: 'account.cat_mute', defaultMessage: 'Muted due to cat mode' },
   mute_notifications: { id: 'account.mute_notifications', defaultMessage: 'Mute notifications from @{name}' },
   unmute_notifications: { id: 'account.unmute_notifications', defaultMessage: 'Unmute notifications from @{name}' },
 });
@@ -108,11 +109,16 @@ class Account extends ImmutablePureComponent {
       const requested        = account.getIn(['relationship', 'requested']);
       const blocking         = account.getIn(['relationship', 'blocking']);
       const muting           = account.getIn(['relationship', 'muting']);
+      const cat_muting       = account.getIn(['relationship', 'cat_muting']);
 
       if (requested) {
         buttons = <IconButton disabled icon='hourglass' title={intl.formatMessage(messages.requested)} />;
       } else if (blocking) {
         buttons = <IconButton active icon='unlock' title={intl.formatMessage(messages.unblock, { name: account.get('username') })} onClick={this.handleBlock} />;
+      } else if (cat_muting) {
+        buttons = (
+          <IconButton disabled icon='volume-up' title={intl.formatMessage(messages.cat_mute)} />
+        );
       } else if (muting) {
         let hidingNotificationsButton;
         if (account.getIn(['relationship', 'muting_notifications'])) {

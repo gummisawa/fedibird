@@ -41,13 +41,14 @@ const messages = defineMessages({
   requested: { id: 'account.requested', defaultMessage: 'Awaiting approval' },
   unblock: { id: 'account.unblock', defaultMessage: 'Unblock @{name}' },
   unmute: { id: 'account.unmute', defaultMessage: 'Unmute @{name}' },
+  cat_mute: { id: 'account.cat_mute', defaultMessage: 'Muted due to cat mode' },
   unfollowConfirm: {
     id: 'confirmations.unfollow.confirm',
     defaultMessage: 'Unfollow',
   },
   unsubscribeConfirm: {
     id: 'confirmations.unsubscribe.confirm',
-    defaultMessage: 'Unsubscribe'
+    defaultMessage: 'Unsubscribe',
   },
 });
 
@@ -210,6 +211,7 @@ class AccountCard extends ImmutablePureComponent {
       const requested        = account.getIn(['relationship', 'requested']);
       const blocking         = account.getIn(['relationship', 'blocking']);
       const muting           = account.getIn(['relationship', 'muting']);
+      const cat_muting       = account.getIn(['relationship', 'cat_muting']);
 
       if (requested) {
         buttons = (
@@ -230,13 +232,23 @@ class AccountCard extends ImmutablePureComponent {
             onClick={this.handleBlock}
           />
         );
+      } else if (cat_muting) {
+        buttons = (
+          <IconButton
+            disabled
+            icon='volume-up'
+            title={intl.formatMessage(messages.cat_mute, {
+              name: account.get('username'),
+            })}
+          />
+        );
       } else if (muting) {
         buttons = (
           <IconButton
             active
             icon='volume-up'
             title={intl.formatMessage(messages.unmute, {
-              name: account.get('username')
+              name: account.get('username'),
             })}
             onClick={this.handleMute}
           />

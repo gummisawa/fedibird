@@ -157,7 +157,9 @@ class HeaderCommon extends ImmutablePureComponent {
       info.push(<span key='blocked' className='relationship-tag'><FormattedMessage id='account.blocked' defaultMessage='Blocked' /></span>);
     }
 
-    if (me !== account.get('id') && account.getIn(['relationship', 'muting'])) {
+    if (me !== account.get('id') && account.getIn(['relationship', 'cat_muting'])) {
+      info.push(<span key='muted' className='relationship-tag'><FormattedMessage id='account.cat_muted' defaultMessage='Muted by cat mode' /></span>);
+    } else if (me !== account.get('id') && account.getIn(['relationship', 'muting'])) {
       info.push(<span key='muted' className='relationship-tag'><FormattedMessage id='account.muted' defaultMessage='Muted' /></span>);
     } else if (me !== account.get('id') && account.getIn(['relationship', 'domain_blocking'])) {
       info.push(<span key='domain_blocked' className='relationship-tag'><FormattedMessage id='account.domain_blocked' defaultMessage='Domain blocked' /></span>);
@@ -226,7 +228,7 @@ class HeaderCommon extends ImmutablePureComponent {
       menu.push({ text: intl.formatMessage(messages.domain_blocks), to: '/domain_blocks' });
     } else {
       if (account.getIn(['relationship', 'following'])) {
-        if (!account.getIn(['relationship', 'muting'])) {
+        if (!account.getIn(['relationship', 'muting']) && !account.getIn(['relationship', 'cat_muting'])) {
           if (account.getIn(['relationship', 'showing_reblogs'])) {
             menu.push({ text: intl.formatMessage(messages.hideReblogs, { name: account.get('username') }), action: this.props.onReblogToggle });
           } else {
@@ -245,7 +247,9 @@ class HeaderCommon extends ImmutablePureComponent {
         menu.push(null);
       }
 
-      if (account.getIn(['relationship', 'muting'])) {
+      if (account.getIn(['relationship', 'cat_muting'])) {
+        // no op
+      } else if (account.getIn(['relationship', 'muting'])) {
         menu.push({ text: intl.formatMessage(messages.unmute, { name: account.get('username') }), action: this.props.onMute });
       } else {
         menu.push({ text: intl.formatMessage(messages.mute, { name: account.get('username') }), action: this.props.onMute });
