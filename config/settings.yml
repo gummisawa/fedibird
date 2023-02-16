@@ -139,6 +139,7 @@ defaults: &defaults
   hide_photo_preview: false
   hide_video_preview: false
   hide_cat: false
+  allow_poll_image: false
 
 development:
   <<: *defaults
