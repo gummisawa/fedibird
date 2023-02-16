@@ -140,6 +140,7 @@ defaults: &defaults
   hide_video_preview: false
   hide_cat: false
   allow_poll_image: false
+  poll_max_options: 4
 
 development:
   <<: *defaults
