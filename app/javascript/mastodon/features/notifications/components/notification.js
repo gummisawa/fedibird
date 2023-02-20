@@ -352,7 +352,7 @@ class Notification extends ImmutablePureComponent {
     const { intl, unread, emojiMap } = this.props;
 
     if (!notification.get('emoji_reaction')) {
-      return <Fragment></Fragment>
+      return <Fragment />;
     }
 
     return (
