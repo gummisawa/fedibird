@@ -2,7 +2,7 @@
 ja:
   simple_form:
     beta_features: ベータ
-    fedibird_features: Fedibird
+    fedibird_features: From Fedibird
     hints:
       account_alias:
         acct: 引っ越し元のユーザー名@ドメインを指定してください

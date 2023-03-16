@@ -158,66 +158,17 @@ class GettingStarted extends ImmutablePureComponent {
       }
 
       navItems.push(
-        <ColumnLink key='group_directory' icon='address-book' text={intl.formatMessage(messages.group_directory)} to='/group_directory' />,
-      );
-
-      height += 48;
-
-      if (profile_directory) {
-        navItems.push(
-          <ColumnLink key='directory' icon='address-book' text={intl.formatMessage(messages.profile_directory)} to='/directory' />,
-        );
-
-        height += 48;
-      }
-
-      navItems.push(
-        <ColumnLink key='suggestions' icon='user-plus' text={intl.formatMessage(messages.suggestions)} to='/suggestions' />,
-        <ColumnLink key='trends' icon='line-chart' text={intl.formatMessage(messages.trends)} to='/trends' />,
-      );
-
-      height += 48*2;
-
-      navItems.push(
-        <ColumnLink key='information_acct' icon='info-circle' text={intl.formatMessage(messages.information_acct)} to='/accounts/2' />,
-        <ColumnLink key='hashtag_fedibird' icon='hashtag' text={intl.formatMessage(messages.hashtag_fedibird)} to='/timelines/tag/fedibird' />,
-      );
-
-      height += 34 + 48*2;
-
-      navItems.push(
         <ColumnSubheading key='header-personal' text={intl.formatMessage(messages.personal)} />,
       );
 
       height += 34;
-    } else {
-      navItems.push(
-        <ColumnLink key='group_directory' icon='address-book' text={intl.formatMessage(messages.group_directory)} to='/group_directory' />,
-      );
-
-      height += 48;
-
-      if (profile_directory) {
-        navItems.push(
-          <ColumnLink key='directory' icon='address-book' text={intl.formatMessage(messages.profile_directory)} to='/directory' />,
-        );
-
-        height += 48;
-      }
 
       navItems.push(
         <ColumnLink key='suggestions' icon='user-plus' text={intl.formatMessage(messages.suggestions)} to='/suggestions' />,
-        <ColumnLink key='trends' icon='line-chart' text={intl.formatMessage(messages.trends)} to='/trends' />,
       );
 
       height += 48*2;
 
-      navItems.push(
-        <ColumnLink key='information_acct' icon='info-circle' text={intl.formatMessage(messages.information_acct)} to='/accounts/2' />,
-        <ColumnLink key='hashtag_fedibird' icon='hashtag' text={intl.formatMessage(messages.hashtag_fedibird)} to='/timelines/tag/fedibird' />,
-      );
-
-      height += 48*2;
     }
 
     if (multiColumn && !columns.find(item => item.get('id') === 'HOME')) {
@@ -247,7 +198,6 @@ class GettingStarted extends ImmutablePureComponent {
       <ColumnLink key='favourites' icon='star' text={intl.formatMessage(messages.favourites)} to='/favourites' />,
       <ColumnLink key='emoji_reactions' icon='smile-o' text={intl.formatMessage(messages.emoji_reactions)} to='/emoji_reactions' />,
       <ColumnLink key='lists' icon='list-ul' text={intl.formatMessage(messages.lists)} to='/lists' />,
-      <ColumnLink key='circles' icon='user-circle' text={intl.formatMessage(messages.circles)} to='/circles' />,
     );
 
     height += 48*6;

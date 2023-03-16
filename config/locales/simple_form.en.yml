@@ -2,7 +2,7 @@
 en:
   simple_form:
     beta_features: Beta
-    fedibird_features: Fedibird
+    fedibird_features: From Fedibird
     hints:
       account_alias:
         acct: Specify the username@domain of the account you want to move from
